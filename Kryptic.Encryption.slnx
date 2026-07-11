@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Kryptic.Encryption.Tests/Kryptic.Encryption.Tests.csproj" />
+  <Project Path="Kryptic.Encryption/Kryptic.Encryption.csproj" />
+</Solution>
