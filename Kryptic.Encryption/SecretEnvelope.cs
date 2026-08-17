@@ -7,7 +7,7 @@ namespace Kryptic.Encryption;
 /// where nonce and ciphertext are base64url (no padding) and keyId identifies which
 /// key encrypted the value, so keys can be rotated without re-encrypting history blindly.
 ///
-/// The envelope carries no plaintext and no key material — it is safe to store and log.
+/// The envelope carries no plaintext and no key material - it is safe to store and log.
 /// </summary>
 public sealed class SecretEnvelope
 {
@@ -86,12 +86,10 @@ public sealed class SecretEnvelope
 
     private static bool IsValidKeyId(string keyId)
     {
-        if (keyId.Length is 0 or > 64) return false;
-        foreach (var c in keyId)
-        {
-            var ok = c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '_' or '-';
-            if (!ok) return false;
-        }
-        return true;
+        return keyId.Length is > 0 and <= 64 &&
+               keyId.All(IsValidKeyIdCharacter);
     }
+
+    private static bool IsValidKeyIdCharacter(char c) =>
+        char.IsAsciiLetterOrDigit(c) || c is '_' or '-';
 }

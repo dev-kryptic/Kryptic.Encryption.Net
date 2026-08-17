@@ -4,7 +4,7 @@ namespace Kryptic.Encryption;
 
 /// <summary>
 /// AES-256-GCM authenticated encryption. Thin composition over the platform's
-/// <see cref="AesGcm"/> — no custom primitives (see SECURITY.md).
+/// <see cref="AesGcm"/> - no custom primitives (see SECURITY.md).
 ///
 /// Associated data binds a ciphertext to its context (e.g. secret id + environment id)
 /// so an attacker with database access cannot swap ciphertexts between rows undetected.
@@ -16,7 +16,7 @@ public static class AesGcmCipher
     public const int TagSizeBytes = 16;   // 128-bit authentication tag
 
     /// <summary>
-    /// Encrypts plaintext under the given key. A fresh random nonce is generated per call —
+    /// Encrypts plaintext under the given key. A fresh random nonce is generated per call -
     /// callers must never supply or reuse nonces.
     /// </summary>
     public static SecretEnvelope Encrypt(byte[] key, string keyId, byte[] plaintext, byte[]? associatedData = null)

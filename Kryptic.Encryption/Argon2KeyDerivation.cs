@@ -6,7 +6,7 @@ namespace Kryptic.Encryption;
 
 /// <summary>
 /// The Argon2id parameter set used for a derivation. Parameter sets are versioned so
-/// they can be raised over time — the version travels with every derived value, and old
+/// they can be raised over time - the version travels with every derived value, and old
 /// values keep verifying with the parameters they were created under.
 /// </summary>
 public sealed class Argon2Parameters
@@ -16,7 +16,7 @@ public sealed class Argon2Parameters
     public int Iterations { get; init; }
     public int Parallelism { get; init; }
 
-    /// <summary>Parameter set 1 — 64 MiB, 3 passes, 4 lanes (OWASP-recommended territory).</summary>
+    /// <summary>Parameter set 1 - 64 MiB, 3 passes, 4 lanes (OWASP-recommended territory).</summary>
     public static readonly Argon2Parameters V1 = new()
     {
         Version = 1,
@@ -36,7 +36,7 @@ public sealed class Argon2Parameters
 }
 
 /// <summary>
-/// Argon2id key derivation — turns a low-entropy passphrase into a 256-bit key.
+/// Argon2id key derivation - turns a low-entropy passphrase into a 256-bit key.
 /// Used for deriving user keys from authentication material and for password hashing.
 /// Composition only: the Argon2id implementation is Konscious.Security.Cryptography.
 /// </summary>

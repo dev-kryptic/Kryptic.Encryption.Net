@@ -7,7 +7,7 @@ namespace Kryptic.Encryption;
 /// from the serialized envelope form, optionally bound to a context string.
 ///
 /// The context (e.g. "secret:{secretDefinitionId}:env:{environmentId}") becomes GCM
-/// associated data — decryption fails if a ciphertext is moved to a different context,
+/// associated data - decryption fails if a ciphertext is moved to a different context,
 /// which defeats ciphertext-swapping attacks by anyone with raw storage access.
 /// </summary>
 public static class SecretCipher
