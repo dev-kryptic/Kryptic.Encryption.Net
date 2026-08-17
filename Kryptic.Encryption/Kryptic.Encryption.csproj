@@ -7,7 +7,7 @@
 
         <PackageId>Kryptic.Encryption</PackageId>
         <Version>1.0.0</Version>
-        <Authors>Kryptic</Authors>
+        <Authors>Kryptic by Theka.dev SINGLE MEMBER P.C.</Authors>
         <Description>The open-source Kryptic encryption engine. All client-side cryptography for the Kryptic secrets platform: AES-256-GCM encryption, Argon2id key derivation, envelope construction and key wrapping. No custom primitives.</Description>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://kryptic.dev</PackageProjectUrl>
