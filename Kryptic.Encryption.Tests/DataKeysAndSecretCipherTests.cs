@@ -39,8 +39,8 @@ public class DataKeysAndSecretCipherTests
     [Fact]
     public void SecretCipher_FullFlow_WithKeyHierarchy()
     {
-        // The Phase 1 platform flow end to end:
-        // master key -> wrapped org data key -> encrypt a secret bound to its context.
+        // The operational-ciphertext flow end to end:
+        // master key -> wrapped org data key -> encrypt a value bound to its context.
         var masterKey = DataKeys.GenerateDataKey();
         var orgDataKey = DataKeys.GenerateDataKey();
         var orgKeyId = DataKeys.GenerateKeyId();
