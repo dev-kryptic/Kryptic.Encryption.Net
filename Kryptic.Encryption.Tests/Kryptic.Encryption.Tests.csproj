@@ -20,4 +20,13 @@
         <ProjectReference Include="..\Kryptic.Encryption\Kryptic.Encryption.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="..\interop-vectors\sealed-box-p256.json" Link="Vectors\sealed-box-p256.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="..\interop-vectors\argon2id.json" Link="Vectors\argon2id.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>

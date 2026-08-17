@@ -38,6 +38,30 @@ public static class AesGcmCipher
     }
 
     /// <summary>
+    /// Encrypts with a caller-supplied nonce. Only safe when the key is unique per message
+    /// (e.g. a per-message key derived from an ephemeral ECDH agreement), so it is internal
+    /// and used by <see cref="SealedBox"/>, never with a reused key.
+    /// </summary>
+    internal static SecretEnvelope EncryptWithNonce(byte[] key, string keyId, byte[] plaintext, byte[] nonce, byte[]? associatedData = null)
+    {
+        ValidateKey(key);
+        if (nonce.Length != NonceSizeBytes)
+            throw new ArgumentException($"Nonce must be {NonceSizeBytes} bytes.", nameof(nonce));
+
+        var ciphertext = new byte[plaintext.Length];
+        var tag = new byte[TagSizeBytes];
+
+        using var aes = new AesGcm(key, TagSizeBytes);
+        aes.Encrypt(nonce, plaintext, ciphertext, tag, associatedData);
+
+        var ciphertextWithTag = new byte[ciphertext.Length + tag.Length];
+        ciphertext.CopyTo(ciphertextWithTag, 0);
+        tag.CopyTo(ciphertextWithTag, ciphertext.Length);
+
+        return new SecretEnvelope(SecretEnvelope.CurrentFormatVersion, keyId, nonce, ciphertextWithTag);
+    }
+
+    /// <summary>
     /// Decrypts an envelope. Throws <see cref="CryptographicException"/> when the key is wrong,
     /// the ciphertext was tampered with, or the associated data does not match.
     /// </summary>

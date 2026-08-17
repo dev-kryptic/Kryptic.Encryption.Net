@@ -29,6 +29,7 @@ dotnet add package Kryptic.Encryption
 | `SecretEnvelope` | The versioned ciphertext container (`v1.<keyId>.<nonce>.<ciphertext+tag>`) |
 | `AesGcmCipher` | AES-256-GCM with random 96-bit nonces and associated-data support |
 | `DataKeys` | Data-key generation, key ids, and key wrapping (envelope encryption) |
+| `SealedBox` | P-256 ECDH sealed box: encrypt a key to a recipient's public key (end-to-end key delivery) |
 | `Argon2KeyDerivation` | Argon2id passphrase -> 256-bit key, with versioned parameter sets |
 | `PasswordHasher` | Argon2id password hashing (`argon2id.<params>.<salt>.<hash>`) |
 
@@ -51,14 +52,26 @@ string plaintext = SecretCipher.DecryptString(dataKey, stored, context);
 
 ### Envelope encryption (key hierarchy)
 
-The wrapping key is whoever you pass in. **Kryptic today is Phase 1:** the platform holds a master key and wraps org data keys server-side. Phase 2 (client-held wrapping key, server never sees plaintext) is not shipped. The envelope format is the same either way.
+The wrapping key is whoever you pass in. **Kryptic secret values are end-to-end
+encrypted:** the org key that opens them exists only on clients (browser, daemon,
+CI), delivered via `SealedBox` grants. The platform uses `WrapKey`/`UnwrapKey`
+only for operational ciphertexts it must read itself, such as SSO IdP client
+secrets - never for your secret values.
 
 ```csharp
 // The data key is stored only in wrapped form, never in plaintext.
-byte[] masterKey = platformMasterKey; // Phase 1: from platform config, not the client
+SecretEnvelope wrapped = DataKeys.WrapKey(wrappingKey, "key_x01", dataKey);
+byte[] unwrapped       = DataKeys.UnwrapKey(wrappingKey, wrapped);
+```
 
-SecretEnvelope wrapped = DataKeys.WrapKey(masterKey, "key_master01", dataKey);
-byte[] unwrapped       = DataKeys.UnwrapKey(masterKey, wrapped);
+### Seal a key to a recipient (end-to-end delivery)
+
+```csharp
+// e.g. an admin's browser granting the org key to an approved daemon device.
+KeyPair device = SealedBox.GenerateKeyPair();
+
+SealedKey grant  = SealedBox.Seal(device.PublicKey, "device-key-1", orgKey);
+byte[] received  = SealedBox.Open(device, grant); // only the device can do this
 ```
 
 ### Derive a key from a passphrase
