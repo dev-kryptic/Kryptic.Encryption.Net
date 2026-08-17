@@ -51,9 +51,11 @@ string plaintext = SecretCipher.DecryptString(dataKey, stored, context);
 
 ### Envelope encryption (key hierarchy)
 
+The wrapping key is whoever you pass in. **Kryptic today is Phase 1:** the platform holds a master key and wraps org data keys server-side. Phase 2 (client-held wrapping key, server never sees plaintext) is not shipped. The envelope format is the same either way.
+
 ```csharp
 // The data key is stored only in wrapped form, never in plaintext.
-byte[] masterKey = /* held by the platform (Phase 1) or the client (Phase 2) */;
+byte[] masterKey = platformMasterKey; // Phase 1: from platform config, not the client
 
 SecretEnvelope wrapped = DataKeys.WrapKey(masterKey, "key_master01", dataKey);
 byte[] unwrapped       = DataKeys.UnwrapKey(masterKey, wrapped);

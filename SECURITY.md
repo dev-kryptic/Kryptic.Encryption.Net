@@ -91,9 +91,10 @@ requires no data migration.
   master key and performs encryption server-side. Protects against database compromise,
   backups, misconfigured storage. Comparable to the default posture of mainstream
   secrets managers. This is what the hosted platform runs today.
-- **Phase 2 (end-to-end, blind store) - roadmap** - the master key is derived from
-  client-held authentication material via Argon2id; the daemon and browser clients
-  encrypt and decrypt locally. The server stores and returns ciphertext it cannot read.
+- **Phase 2 (end-to-end, blind store) - not shipped** - the master key would be derived
+  from client-held authentication material via Argon2id; the daemon and browser clients
+  would encrypt and decrypt locally. The server would store and return ciphertext it
+  cannot read. This is planned. It is not implemented.
 
 ### Key rotation (Phase 1)
 

@@ -6,9 +6,9 @@ namespace Kryptic.Encryption;
 /// Data-key generation and key wrapping - the envelope-encryption building blocks.
 ///
 /// A data key encrypts actual secret values. The data key itself is stored only in
-/// wrapped (encrypted) form, wrapped by a higher-level key: the platform master key
-/// today (Phase 1), a client-held key in the end-to-end model (Phase 2).
-/// See SECURITY.md for the full key hierarchy.
+/// wrapped (encrypted) form, wrapped by a higher-level key. Kryptic currently uses a
+/// platform master key (Phase 1). A client-held wrapping key (Phase 2) is planned and
+/// is not shipped. See SECURITY.md for the full key hierarchy.
 /// </summary>
 public static class DataKeys
 {
