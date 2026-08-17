@@ -1,4 +1,4 @@
-# Kryptic Encryption Engine — Security Architecture
+# Kryptic Encryption Engine - Security Architecture
 
 This document describes the complete cryptographic design of the Kryptic platform's
 encryption engine: what is derived from what, where each key lives, and the exact
@@ -13,9 +13,9 @@ The engine composes established implementations only. There are **no custom prim
 | Operation | Algorithm | Implementation |
 | --- | --- | --- |
 | Secret encryption | AES-256-GCM, 96-bit random nonce, 128-bit tag | `System.Security.Cryptography.AesGcm` (.NET platform) |
-| Key derivation / password hashing | Argon2id (64 MiB, 3 iterations, parallelism 4 — parameter set v1) | `Konscious.Security.Cryptography.Argon2` |
+| Key derivation / password hashing | Argon2id (64 MiB, 3 iterations, parallelism 4 - parameter set v1) | `Konscious.Security.Cryptography.Argon2` |
 | Randomness | OS CSPRNG | `System.Security.Cryptography.RandomNumberGenerator` |
-| Constant-time comparison | — | `CryptographicOperations.FixedTimeEquals` |
+| Constant-time comparison | - | `CryptographicOperations.FixedTimeEquals` |
 
 ## The envelope format
 
@@ -25,13 +25,13 @@ Every ciphertext the platform stores or transmits is a **secret envelope**:
 v1.<keyId>.<base64url nonce>.<base64url ciphertext||tag>
 ```
 
-- `v1` — format version. Layout or parameter changes bump the version; old data keeps
+- `v1` - format version. Layout or parameter changes bump the version; old data keeps
   parsing under its original rules.
-- `keyId` — identifies which key produced the ciphertext (`[a-zA-Z0-9_-]`, ≤ 64 chars).
+- `keyId` - identifies which key produced the ciphertext (`[a-zA-Z0-9_-]`, ≤ 64 chars).
   This is what makes key rotation possible without rewriting history blindly.
-- `nonce` — 12 bytes, generated fresh from the CSPRNG for every encryption. The API
+- `nonce` - 12 bytes, generated fresh from the CSPRNG for every encryption. The API
   offers no way for a caller to supply a nonce, so nonce reuse by misuse is not possible.
-- `ciphertext||tag` — the AES-256-GCM output with the 16-byte authentication tag appended.
+- `ciphertext||tag` - the AES-256-GCM output with the 16-byte authentication tag appended.
 
 The envelope contains no key material and no plaintext; it is safe to store, index, and log.
 
@@ -45,7 +45,7 @@ secret:<secretDefinitionId>:env:<environmentId>
 
 Decryption fails unless the same context is presented. An attacker with raw database
 access therefore cannot swap ciphertexts between rows (e.g. move the production
-`DATABASE_URL` ciphertext into a development row a low-privilege user may reveal) —
+`DATABASE_URL` ciphertext into a development row a low-privilege user may reveal) -
 the authentication tag will not verify.
 
 ## Key hierarchy
@@ -66,7 +66,7 @@ the authentication tag will not verify.
 ```
 
 - **Data keys** are 32 random bytes from the CSPRNG. They are generated once per
-  organization and persisted exclusively in *wrapped* form — an envelope whose plaintext
+  organization and persisted exclusively in *wrapped* form - an envelope whose plaintext
   happens to be a key.
 - **Wrapping** is ordinary AES-256-GCM under the master key, so it inherits the same
   authentication guarantees.
@@ -84,15 +84,29 @@ the authentication tag will not verify.
 ### Deployment phases
 
 The Kryptic platform adopts this engine in two phases. **The stored data format is
-identical in both** — only who holds the master key changes, which is why Phase 2
+identical in both** - only who holds the master key changes, which is why Phase 2
 requires no data migration.
 
-- **Phase 1 (server-side envelope encryption)** — the platform holds the master key and
-  performs encryption server-side. Protects against database compromise, backups,
-  misconfigured storage. Comparable to the default posture of mainstream secrets managers.
-- **Phase 2 (end-to-end, blind store)** — the master key is derived from client-held
-  authentication material via Argon2id; the daemon and browser clients encrypt and
-  decrypt locally. The server stores and returns ciphertext it cannot read.
+- **Phase 1 (server-side envelope encryption) - current** - the platform holds the
+  master key and performs encryption server-side. Protects against database compromise,
+  backups, misconfigured storage. Comparable to the default posture of mainstream
+  secrets managers. This is what the hosted platform runs today.
+- **Phase 2 (end-to-end, blind store) - roadmap** - the master key is derived from
+  client-held authentication material via Argon2id; the daemon and browser clients
+  encrypt and decrypt locally. The server stores and returns ciphertext it cannot read.
+
+### Key rotation (Phase 1)
+
+Two independent rotations, both enabled by the `keyId` in every envelope:
+
+- **Org data-key rotation** - a fresh data key is generated and every one of the
+  organization's ciphertexts (values, version history, IdP client secrets) is
+  re-encrypted under it in a single transaction; old keys are deactivated but retained.
+  Owner-only, audit-logged.
+- **Master-key rotation** - org data keys are *rewrapped* under the new master key; the
+  data keys themselves, and therefore all secret ciphertexts, are untouched. Retired
+  master keys remain configured for unwrapping until the rewrap pass completes, then
+  can be removed.
 
 ## Password hashing
 
@@ -108,10 +122,10 @@ argon2id.<parameterSetVersion>.<base64url salt (16 bytes)>.<base64url hash (32 b
 
 ## What the server can and cannot see
 
-**Phase 1** — the server can transiently see plaintext during encrypt/reveal operations
+**Phase 1** - the server can transiently see plaintext during encrypt/reveal operations
 it performs itself; the database contains only ciphertext envelopes and wrapped keys.
 
-**Phase 2** — the server can see: envelope metadata (version, key id, nonce, ciphertext
+**Phase 2** - the server can see: envelope metadata (version, key id, nonce, ciphertext
 length), secret *keys* (names like `DATABASE_URL`), project/environment structure, and
 audit metadata. The server can never see: secret values, data keys, or the master key.
 

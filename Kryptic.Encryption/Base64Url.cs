@@ -1,7 +1,7 @@
 namespace Kryptic.Encryption;
 
 /// <summary>
-/// Base64url (RFC 4648 §5, no padding) — used inside envelopes so the '.' separator
+/// Base64url (RFC 4648 §5, no padding) - used inside envelopes so the '.' separator
 /// can never appear in an encoded segment.
 /// </summary>
 public static class Base64Url
@@ -24,7 +24,7 @@ public static class Base64Url
     public static bool TryDecode(string? encoded, out byte[] data)
     {
         data = [];
-        if (encoded is null || encoded.Length == 0) return false;
+        if (string.IsNullOrEmpty(encoded)) return false;
 
         var base64 = encoded.Replace('-', '+').Replace('_', '/');
         base64 = (base64.Length % 4) switch
