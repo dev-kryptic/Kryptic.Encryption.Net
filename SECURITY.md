@@ -6,6 +6,12 @@ boundary of what the Kryptic server can and cannot see. It is written so a secur
 reviewer can evaluate the architecture before reading a line of code
 (Kerckhoffs's principle: the design is public; security depends only on the keys).
 
+This file is identical across the three runtime repositories:
+
+- [Kryptic.Encryption.Dotnet](https://github.com/dev-kryptic/Kryptic.Encryption.Dotnet) (.NET, this repo)
+- [Kryptic.Encryption.NPM](https://github.com/dev-kryptic/Kryptic.Encryption.NPM) (TypeScript / WebCrypto)
+- [Kryptic.Encryption.Go](https://github.com/dev-kryptic/Kryptic.Encryption.Go) (Go)
+
 ## Primitives
 
 The engine composes established implementations only. There are **no custom primitives**.
@@ -167,7 +173,9 @@ That is the design working as intended.
 
 ## Test vectors
 
-Deterministic test coverage lives in `Kryptic.Encryption.Tests` and includes: round-trip,
+Deterministic test coverage lives in `Kryptic.Encryption.Tests` (this repo), the
+TypeScript tests in `Kryptic.Encryption.NPM`, and the Go tests in
+`Kryptic.Encryption.Go`. The C# suite includes: round-trip,
 tamper detection (flipped ciphertext/nonce bytes), wrong-key rejection, wrong-context
 rejection, envelope fuzzing (truncation, wrong version, malformed base64), Argon2id
 determinism per salt/parameter set, and wrap/unwrap round-trips. AES-256-GCM and Argon2id
