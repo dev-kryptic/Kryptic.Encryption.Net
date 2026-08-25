@@ -14,7 +14,7 @@ Sibling implementations of the same wire formats:
 | Repository                                                                      | Runtime | Consumed by |
 |---------------------------------------------------------------------------------| --- | --- |
 | [Kryptic.Encryption.Net](https://github.com/dev-kryptic/Kryptic.Encryption.Net) | .NET (`Kryptic.Encryption` on nuget.org) | Kryptic Platform |
-| [Kryptic.Encryption.NPM](https://github.com/dev-kryptic/Kryptic.Encryption.NPM) | TypeScript / WebCrypto (`@kryptic-dev/encryption`) | Management dashboard |
+| [Kryptic.Encryption.NPM](https://github.com/dev-kryptic/Kryptic.Encryption.NPM) | TypeScript / WebCrypto (`@krypticdev/encryption`) | Management dashboard |
 | [Kryptic.Encryption.Go](https://github.com/dev-kryptic/Kryptic.Encryption.Go)   | Go | Daemon, CLI, Kubernetes operator |
 
 A format change (envelope, sealed box, Argon2id parameters) must land in all three
