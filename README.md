@@ -116,15 +116,18 @@ dotnet test
 ## Publishing (maintainers)
 
 CI lives in [`.github/workflows/publish.yml`](.github/workflows/publish.yml). Pull
-requests only run tests. A publish runs on push to `main`, a `v*.*.*` tag, or
-manual `workflow_dispatch`.
+requests only run tests. A publish on `main` (or `workflow_dispatch`) commits the
+version bump, pushes it as the Kryptic Release Bot, publishes the package, then
+tags `vX.Y.Z` and opens a GitHub Release.
 
 ### GitHub Actions secrets
 
-Add these on the GitHub repo (`Settings` > `Secrets and variables` > `Actions`):
+Add these at the org or on the GitHub repo (`Settings` > `Secrets and variables` > `Actions`):
 
 | Secret | What it is | Where to get it |
 | --- | --- | --- |
+| `RELEASE_BOT_APP_ID` | App ID of **Kryptic Release Bot** | GitHub App settings |
+| `RELEASE_BOT_PRIVATE_KEY` | Private key `.pem` of that app | GitHub App settings > Generate a private key |
 | `NUGET_USER` | nuget.org username used by [NuGet trusted publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) | nuget.org account that owns the `Kryptic.Encryption` package. The `NuGet/login` action exchanges GitHub OIDC for a short-lived API key, so you do **not** store a long-lived `NUGET_API_KEY`. |
 
 Trusted publishing setup on nuget.org (one-time):
@@ -132,14 +135,14 @@ Trusted publishing setup on nuget.org (one-time):
 1. Sign in as the package owner.
 2. Open Trusted Publishing for `Kryptic.Encryption`.
 3. Register this GitHub repository (`dev-kryptic/Kryptic.Encryption.Net`), the
-   `Build and publish` workflow, and the `main` branch (and tags if you publish from tags).
+   `Build and publish` workflow, and the `main` branch.
 
 If the GitHub repo was renamed from `Kryptic.Encryption`, update the trusted-publishing
 registration to `dev-kryptic/Kryptic.Encryption.Net` or publishes will fail OIDC.
 On GitHub: Settings > General > Repository name.
 
-No other secrets are required. `GITHUB_TOKEN` is issued automatically and is used
-only to commit the csproj version bump back to `main`.
+No other secrets are required for git. The Release Bot is a ruleset bypass
+actor and commits the csproj version, the `vX.Y.Z` tag, and the GitHub Release.
 
 ### Versioning
 
